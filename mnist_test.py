@@ -20,7 +20,9 @@ logits = resnet.resnet_18(tf.image.resize_images(inputs, (input_size, input_size
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits, labels=labels))
 predict = tf.argmax(logits, 1)
 accuracy = tf.reduce_mean(tf.cast(tf.equal(predict, tf.argmax(labels, 1)), tf.float32))
+update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 train = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1.0).minimize(loss)
+train = tf.group([train, update_ops])
 
 init = tf.initialize_all_variables()
 sess = tf.Session()
